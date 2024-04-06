@@ -63,7 +63,7 @@ model VerificationToken {
 }
 
 model Delivery {
-  id                 Int       @id @default(autoincrement())
+  id                 String      @id @default(cuid())
   senderID           String
   sender            User @relation(fields: [senderID], references: [id])
   receiverID         String
@@ -91,4 +91,28 @@ enum DeliveryStatus {
   PENDING
   IN_PROGRESS
   DELIVERED
+}
+
+model Bus {
+  numberPlate String @id
+  name        String
+  orders      BusOrders[] 
+}
+
+model BusOrders {
+  id            String @id @default(cuid())
+  orderNum     Int @default(autoincrement())
+  numberPlate  String
+  bus          Bus    @relation(fields: [numberPlate], references: [numberPlate])
+  Pickup        String
+  Destination  String
+  rid           String
+  Status        OrderStatus
+  @@index([orderNum])
+}
+
+enum OrderStatus {
+  ACCEPTED
+  PENDING
+  DECLINED
 }

@@ -8,20 +8,23 @@ import AuthButton from "../auth/authButton";
 export function Navbar() {
   return (
     <>
-      <nav className="sticky inset-x-0 top-0 z-30 h-16 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all dark:bg-black">
+      <nav className="sticky inset-x-0 top-0 z-30 h-16 w-full my-3  backdrop-blur-lg transition-all dark:bg-black">
         <MaxWidthWrapper>
-          <div className="flex h-16 items-center justify-between border-b border-zinc-200">
+          <div className="cover flex justify-center w-full">
+          <div className="flex h-16 items-center justify-between px-3 bg-gray-500 w-1/2 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-50 border border-gray-100
+
+ rounded-full">
             <Link href="/" className="z-40 flex font-semibold">
-              <div className="flex h-14 items-center justify-between gap-2">
-                <Image src="/logo.png" alt="logo" width={50} height={50} />
-                <span className="text-[#5b6d42] ">WebWay.</span>
+              <div className="flex h-14 items-center justify-between gap-3">
+                <Image src="/logo.png" alt="logo" width={70} height={70} />
+                <span className="text-white font-bold text-2xl">WebWay</span>
               </div>
             </Link>
             <div className="hidden items-center space-x-4 sm:flex">
               <Link
                 href="/dashboard"
                 className={buttonVariants({
-                  variant: "mine",
+                  variant: "hovblue",
                   size: "sm",
                 })}
               >
@@ -30,24 +33,25 @@ export function Navbar() {
               <Link
                 href="/events"
                 className={buttonVariants({
-                  variant: "mine",
+                  variant: "hovblue",
                   size: "sm",
                 })}
               >
-                About Us
+                About 
               </Link>
               <Link
                 href="/team"
                 className={buttonVariants({
-                  variant: "mine",
+                  variant: "hovblue",
                   size: "sm",
                 })}
               >
-                Contact Us
+                Contact 
               </Link>
 
               <AuthButton />
             </div>
+          </div>
           </div>
         </MaxWidthWrapper>
       </nav>

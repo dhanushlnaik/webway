@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { api } from '~/utils/api';
 import MaxWidthWrapper from '../layout/max-width-wrapper';
 import { useSession } from 'next-auth/react';
+import { redirect } from "next/navigation";
 
 enum Plan {
     STANDARD = "STANDARD",
@@ -142,6 +143,7 @@ const formSchema = z.object({
         });
   
         console.log("Form submitted successfully", values);
+        redirect("/busses");
       } catch (error) {
         console.error("Error submitting form:", error);
       }
