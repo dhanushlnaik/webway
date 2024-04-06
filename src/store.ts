@@ -7,6 +7,12 @@ type StateStore = {
   setLongitude: (longitude: number) => void;
   latitude: number;
   setLatitude: (latitude: number) => void;
+  busNo: string;
+  setbusNo : (busNo : string) => void;
+  deliveryid : string;
+  setDeliveryId: (deliveryid: string) => void;
+  receiverId : string;
+  setReceiverId: (receiverid: string) => void;
 };
 
 export const useStateStore = create<StateStore>((set) => {
@@ -18,5 +24,11 @@ export const useStateStore = create<StateStore>((set) => {
     setLongitude: (longitude: number) => set({ longitude }),
     latitude: 0,
     setLatitude: (latitude: number) => set({ latitude }),
+    busNo: "0",
+    setbusNo : (busNo: string) => set({busNo}),
+    deliveryid : "0",
+    setDeliveryId : (deliveryid: string) => set({deliveryid}),
+    receiverId : "0",
+    setReceiverId: (receiverId : string) => set({receiverId})
   };
 });

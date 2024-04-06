@@ -1,9 +1,18 @@
 import React from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useStateStore } from "~/store";
+import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
 
 const BusDetails = () => {
   // Array of bus details objects
+  const { setbusNo } = useStateStore();
+  const { deliveryid, receiverId} = useStateStore();
+  const { data: session } = useSession();
+  const user = session?.user;
+  const addSQ = api.delivery.addsenderqr.useMutation();
+  const addRQ = api.delivery.addreceiverqr.useMutation()
   const busDetailsArray = [
     {
       busName: "Navadurga",
@@ -85,6 +94,7 @@ const BusDetails = () => {
       duration: "",
     },
   ];
+  
 
   // Function to calculate duration
   const calculateDuration = (departureTime: string, arrivalTime: string) => {
@@ -98,6 +108,21 @@ const BusDetails = () => {
     }
     return duration.toString();
   };
+  const handleClick = async (busNo : string) => {
+    await addSQ.mutateAsync({
+      deliveryID: deliveryid,
+      senderID: user?.id ?? "",
+      scanNumber : 1
+    });
+    await addRQ.mutateAsync({
+      deliveryID: deliveryid,
+      receiverID: receiverId,
+      scanNumber : 1
+    })
+    setbusNo(busNo)
+    console.log(`Order ${busNo} accepted.`);
+  };
+
 
   // Calculate duration for each bus
   busDetailsArray.forEach((bus) => {
@@ -119,7 +144,7 @@ const BusDetails = () => {
           <p>{bus.to}</p>
           <p>{bus.duration}</p>
           <Link href={"/qr"}>
-            <Button className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700">
+            <Button onClick={() => handleClick(bus.busNo)} className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700">
               Book
             </Button>
           </Link>

@@ -1,8 +1,8 @@
 import Head from "next/head";
-import localFont from "next/font/local";
 import MaxWidthWrapper from "~/components/layout/max-width-wrapper";
 import Fade from "react-awesome-reveal";
 import OrderTable from "~/components/conductor/tableview";
+import localFont from "next/font/local";
 const myFont = localFont({ src: "../../lib/obscura.otf" });
 
 export default function Home() {

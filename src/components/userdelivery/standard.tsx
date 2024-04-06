@@ -2,6 +2,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
+import { v4 as uuidv4 } from 'uuid';
 import {
   Form,
   FormControl,
@@ -13,11 +14,13 @@ import {
 import { Input } from "~/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { api } from "~/utils/api";
 import MaxWidthWrapper from "../layout/max-width-wrapper";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useStateStore } from "~/store";
+import { useToast } from "~/components/ui/use-toast"
+
 
 enum Plan {
   STANDARD = "STANDARD",
@@ -44,6 +47,8 @@ const formSchema = z.object({
 export default function Standard() {
   const { data: session } = useSession();
   const user = session?.user;
+  const {setDeliveryId, setReceiverId } = useStateStore();
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -120,16 +125,15 @@ export default function Standard() {
   // Fetch receiver's ID outside of onSubmit
   const receiverEmail = form.watch("remail");
   const receiverQuery = api.user.useremail.useQuery({ text: receiverEmail });
+  const trackingid:string = uuidv4();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log("Submitting form with values:", values);
-      toast("Event has been created", {
-        description: ` created in the database.`,
-      });
 
       // Use receiverQuery.data.id here
       await addExpress.mutateAsync({
+        trackingID : trackingid,
         senderID: user?.id ?? "01001",
         receiverID: receiverQuery.data?.id ?? "01001",
         fromPlace: values.fromPlace,
@@ -140,10 +144,17 @@ export default function Standard() {
         scanNumber: 1000,
         status: DeliveryStatus.PENDING,
         items: parseInt(values.items),
+        
       });
 
+      setDeliveryId(trackingid);
+      setReceiverId(receiverQuery.data?.id ?? "0");
+      toast({
+        title: "Standard Delivery",
+        description: `ID : ${trackingid}`,
+      });
       console.log("Form submitted successfully", values);
-      router.push("/busses");
+      await router.push("/busses");
     } catch (error) {
       console.error("Error submitting form:", error);
     }

@@ -1,8 +1,12 @@
 import React from "react";
+import { useStateStore } from "~/store";
 import { api } from "~/utils/api";
 
 const Home = () => {
-  const { data: qrData } = api.qr.getQR.useQuery();
+  const { deliveryid} = useStateStore();
+  const { data: qrData } = api.qr.getSenderQR.useQuery({
+    trackingID: deliveryid
+  })
   return (
     <>
       <h2>QR</h2>
@@ -12,3 +16,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

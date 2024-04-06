@@ -8,24 +8,32 @@ import {
 import QRCode from "qrcode";
 
 export const qrRouter = createTRPCRouter({
-  getQR: publicProcedure.query(async ({ ctx }) => {
+  getSenderQR: publicProcedure
+  .input(z.object({ trackingID: z.string() }))
+  .query(async ( {ctx,input} ) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const jsonData = {
-      id: 1,
-      packageId: 123,
-      qrCode: "ABC123DEF456",
-      qrStatus: true,
-      scanNumber: 5,
-      senderId: "dhanush123",
-      receiverId: "receiver456",
-      fromAddress: "123 Main St, City",
-      toAddress: "456 Elm St, Town",
-      createdAt: "2024-04-06T12:30:45Z",
-      updatedAt: "2024-04-06T12:30:45Z",
-      qrstatus: "Deactivated",
-    };
-    const jsonStringData = JSON.stringify(jsonData);
-    console.log(jsonData);
+    const data = await ctx.db.senderQR.findFirst({
+      where: {
+        deliveryId : input.trackingID
+      }
+    })
+    const jsonStringData = JSON.stringify(data);
+    console.log(jsonStringData);
+    const qr = QRCode.toDataURL(jsonStringData);
+
+    return qr;
+  }),
+  getRecieverQR: publicProcedure
+  .input(z.object({ trackingID: z.string() }))
+  .query(async ( {ctx,input} ) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const data = await ctx.db.receiverQR.findFirst({
+      where: {
+        deliveryId : input.trackingID
+      }
+    })
+    const jsonStringData = JSON.stringify(data);
+    console.log(jsonStringData);
     const qr = QRCode.toDataURL(jsonStringData);
 
     return qr;

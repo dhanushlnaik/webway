@@ -28,6 +28,7 @@ export const deliveryRouter = createTRPCRouter({
     .input(
       z.object({
         senderID: z.string(),
+        trackingID: z.string(),
         receiverID: z.string(),
         fromPlace: z.string(),
         toPlace: z.string(),
@@ -44,10 +45,10 @@ export const deliveryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       return ctx.db.delivery.create({
         data: {
           senderID: input.senderID,
+          trackingID : input.trackingID,
           receiverID: input.receiverID,
           fromPlace: input.fromPlace,
           toPlace: input.toPlace,
@@ -59,9 +60,17 @@ export const deliveryRouter = createTRPCRouter({
           scanNumber: input.scanNumber,
           status: input.status,
           items: input.items,
+          
         },
       });
     }),
+  getDelivery: protectedProcedure
+  .input(z.object({ trackingID: z.string() }))
+  .query(( {ctx,input} ) => {
+    return ctx.db.delivery.findFirst({
+      where: {trackingID : input.trackingID}
+    })
+  }),
 
   getLatest: protectedProcedure.query(({ ctx }) => {
     return ctx.db.delivery.findFirst({
@@ -90,4 +99,39 @@ export const deliveryRouter = createTRPCRouter({
         },
       });
     }),
+
+    addsenderqr: publicProcedure
+    .input(
+      z.object({
+        deliveryID : z.string(),
+        senderID: z.string(),
+        scanNumber: z.number(),
+      })
+    ).mutation(async ({ ctx , input }) => {
+      return ctx.db.senderQR.create({
+        data: {
+          deliveryId : input.deliveryID,
+          senderID: input.senderID,
+          scanNumber: input.scanNumber
+        }
+      })
+    }),
+    addreceiverqr: publicProcedure
+    .input(
+      z.object({
+        deliveryID : z.string(),
+        receiverID: z.string(),
+        scanNumber: z.number(),
+      })
+    ).mutation(async ({ ctx , input }) => {
+      return ctx.db.receiverQR.create({
+        data: {
+          deliveryId : input.deliveryID,
+          receiverID: input.receiverID,
+          scanNumber: input.scanNumber
+        }
+      })
+    })
 });
+
+
