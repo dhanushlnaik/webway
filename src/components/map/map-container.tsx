@@ -1,5 +1,5 @@
-import { useState} from "react";
-import { Marker} from "react-leaflet";
+import { useState } from "react";
+import { Marker } from "react-leaflet";
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -16,11 +16,10 @@ const Map: React.FC<MapProps> = ({ lat, long }) => {
 
   // const setAddEventOpen = useStateStore((state) => state.setAddEventOpen);
 
-
   // Define a custom icon
   const customIcon = new L.Icon({
-    iconUrl: "/marker-icon-2x.png",
-    iconSize: [25, 41],
+    iconUrl: "/bus.png",
+    iconSize: [200, 200],
   });
 
   const AddMarkerOnClick = () => {
@@ -48,15 +47,7 @@ const Map: React.FC<MapProps> = ({ lat, long }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <AddMarkerOnClick />
-      {markers.map((marker, index) => (
-        <Marker
-          key={index}
-          position={[marker.lat, marker.long]}
-          icon={customIcon}
-        >
-        </Marker>
-      ))}
+      <Marker key={"you"} position={[lat, long]} icon={customIcon}></Marker>
     </MapContainer>
   );
 };
