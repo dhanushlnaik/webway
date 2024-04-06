@@ -1,5 +1,6 @@
 import { deliveryRouter } from "~/server/api/routers/delivery";
 import { userRouter } from "~/server/api/routers/user";
+import { qrRouter } from "~/server/api/routers/qr";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 export const appRouter = createTRPCRouter({
   delivery: deliveryRouter,
   user: userRouter,
+  qr: qrRouter,
 });
 
 // export type definition of API

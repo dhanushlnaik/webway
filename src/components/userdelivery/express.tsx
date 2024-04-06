@@ -1,7 +1,7 @@
 // Import necessary modules and components
 "use client";
-import { useForm } from 'react-hook-form';
-import { Button } from '~/components/ui/button';
+import { useForm } from "react-hook-form";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,199 +9,199 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import { api } from '~/utils/api';
-import MaxWidthWrapper from '../layout/max-width-wrapper';
-import { useSession } from 'next-auth/react';
-import { Textarea } from '../ui/textarea';
-import { redirect } from "next/navigation";
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { api } from "~/utils/api";
+import MaxWidthWrapper from "../layout/max-width-wrapper";
+import { useSession } from "next-auth/react";
+import { Textarea } from "../ui/textarea";
+import { useRouter } from "next/router";
 
 enum Plan {
-    STANDARD = "STANDARD",
-    EXPRESS = "EXPRESS",
-  }
-  
-  enum DeliveryStatus {
-    PENDING = "PENDING",
-    DELIVERED = "DELIVERED",
-  }
+  STANDARD = "STANDARD",
+  EXPRESS = "EXPRESS",
+}
+
+enum DeliveryStatus {
+  PENDING = "PENDING",
+  DELIVERED = "DELIVERED",
+}
 
 const formSchema = z.object({
-    remail: z.string(),
-    rfirstname: z.string(),
-    rlastname: z.string(),
-    rphone: z.string(),
-    sphone: z.string(),
-    fromPlace: z.string(),
-    toPlace: z.string(),
-    fromaddress: z.string(),
-    toaddress: z.string(),
-    items: z.string(),
+  remail: z.string(),
+  rfirstname: z.string(),
+  rlastname: z.string(),
+  rphone: z.string(),
+  sphone: z.string(),
+  fromPlace: z.string(),
+  toPlace: z.string(),
+  fromaddress: z.string(),
+  toaddress: z.string(),
+  items: z.string(),
+});
+export default function Express() {
+  const { data: session } = useSession();
+  const user = session?.user;
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      remail: "",
+      rfirstname: "",
+      rlastname: "",
+      rphone: "",
+      sphone: "",
+      fromPlace: "",
+      toPlace: "",
+      fromaddress: "",
+      toaddress: "",
+      items: "1",
+    },
   });
-  export default function Express() {
-    const { data: session } = useSession();
-    const user = session?.user;
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        remail: "",
-        rfirstname: "",
-        rlastname: "",
-        rphone: "",
-        sphone: "",
-        fromPlace: "",
-        toPlace: "",
-        fromaddress: "",
-        toaddress: "",
-        items: "1",
-      },
-    });
-  
-    const destinationOptions = [
-      "Mangalore",
-      "Manipal",
-      "Padubidri",
-      "Udupi",
-      "Kundapura",
-      "Moodbidri",
-      "Kinnigoli",
-      "Surathkal",
-      "Mulki",
-      "Bantwal",
-      "Puttur",
-      "Sullia",
-      "Belthangady",
-      "Dharmasthala",
-      "Karkala",
-      "Kapu",
-      "Kota",
-    
-      // Uttara Kannada
-      "Ankola",
-      "Bhatkal",
-      "Honnavar",
-      "Karwar",
-      "Kumta",
-      "Mundgod",
-      "Sirsi",
-      "Siddapura",
-      "Yellapur",
-    
-      // Additional towns/cities
-      "Ajekar",
-      "Bajpe",
-      "Belur",
-      "Brahmavar",
-      "Byndoor",
-      "Coondapur",
-      "Gangolli",
-      "Hebri",
-      "Hiriyadka",
-      "Hosanagara",
-      "Kaup",
-      "Kemmannu",
-      "Madanthyar",
-      "Murdeshwar",
-      "Panambur",
-      "Perampalli",
-      "Santhekatte",
-      "Shirva",
-      "Someshwara",
-      "Taluk",
-      "Vandse",
-      "Vitla",
-    ];
-  
-    const addExpress = api.delivery.create.useMutation();
+  const router = useRouter();
 
-    // Fetch receiver's ID outside of onSubmit
-    const receiverEmail = form.watch("remail");
-    const receiverQuery = api.user.useremail.useQuery({ text: receiverEmail });
-  
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-      try {
-        console.log("Submitting form with values:", values);
-        toast("Event has been created", {
-          description: ` created in the database.`,
-        });
-  
-        // Use receiverQuery.data.id here
-        await addExpress.mutateAsync({
-          senderID: user?.id ?? "01001",
-          receiverID: receiverQuery.data?.id ?? "01001",
-          fromPlace: values.fromPlace,
-          toPlace: values.toPlace,
-          sphone: values.sphone,
-          rphone: values.rphone,
-          plan: Plan.EXPRESS,
-          scanNumber: 1000,
-          status: DeliveryStatus.PENDING,
-          items: parseInt(values.items),
-        });
-  
-        console.log("Form submitted successfully", values);
-        redirect("/busses");
-      } catch (error) {
-        console.error("Error submitting form:", error);
-      }
-    };
-  
-  
-    return (
-      <MaxWidthWrapper className="mx-auto mb-10 mt-10 w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
-        <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
-          Welcome to WebWay
-        </h2>
-        <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-          Let us know your details to get started
-        </p>
-        <div style={{ padding: "20px" }}>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
-            >
-                   <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-     <FormField
-              control={form.control}
-              name="rfirstname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{"First Name"}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Dhanush"
-                      {...field}
-                      style={{ padding: "10px" }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-                 <FormField
-              control={form.control}
-              name="rlastname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{"Last Name"}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Naik"
-                      {...field}
-                      style={{ padding: "10px" }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-     </div>
-                         <FormField
+  const destinationOptions = [
+    "Mangalore",
+    "Manipal",
+    "Padubidri",
+    "Udupi",
+    "Kundapura",
+    "Moodbidri",
+    "Kinnigoli",
+    "Surathkal",
+    "Mulki",
+    "Bantwal",
+    "Puttur",
+    "Sullia",
+    "Belthangady",
+    "Dharmasthala",
+    "Karkala",
+    "Kapu",
+    "Kota",
+
+    // Uttara Kannada
+    "Ankola",
+    "Bhatkal",
+    "Honnavar",
+    "Karwar",
+    "Kumta",
+    "Mundgod",
+    "Sirsi",
+    "Siddapura",
+    "Yellapur",
+
+    // Additional towns/cities
+    "Ajekar",
+    "Bajpe",
+    "Belur",
+    "Brahmavar",
+    "Byndoor",
+    "Coondapur",
+    "Gangolli",
+    "Hebri",
+    "Hiriyadka",
+    "Hosanagara",
+    "Kaup",
+    "Kemmannu",
+    "Madanthyar",
+    "Murdeshwar",
+    "Panambur",
+    "Perampalli",
+    "Santhekatte",
+    "Shirva",
+    "Someshwara",
+    "Taluk",
+    "Vandse",
+    "Vitla",
+  ];
+
+  const addExpress = api.delivery.create.useMutation();
+
+  // Fetch receiver's ID outside of onSubmit
+  const receiverEmail = form.watch("remail");
+  const receiverQuery = api.user.useremail.useQuery({ text: receiverEmail });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      console.log("Submitting form with values:", values);
+      toast("Event has been created", {
+        description: ` created in the database.`,
+      });
+
+      // Use receiverQuery.data.id here
+      await addExpress.mutateAsync({
+        senderID: user?.id ?? "01001",
+        receiverID: receiverQuery.data?.id ?? "01001",
+        fromPlace: values.fromPlace,
+        toPlace: values.toPlace,
+        sphone: values.sphone,
+        rphone: values.rphone,
+        plan: Plan.EXPRESS,
+        scanNumber: 1000,
+        status: DeliveryStatus.PENDING,
+        items: parseInt(values.items),
+      });
+
+      console.log("Form submitted successfully", values);
+      router.push("/busses");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  return (
+    <MaxWidthWrapper className="mx-auto mb-10 mt-10 w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
+      <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
+        Welcome to WebWay
+      </h2>
+      <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
+        Let us know your details to get started
+      </p>
+      <div style={{ padding: "20px" }}>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+          >
+            <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+              <FormField
+                control={form.control}
+                name="rfirstname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{"First Name"}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Dhanush"
+                        {...field}
+                        style={{ padding: "10px" }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="rlastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{"Last Name"}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Naik"
+                        {...field}
+                        style={{ padding: "10px" }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
               control={form.control}
               name="remail"
               render={({ field }) => (
@@ -211,7 +211,7 @@ const formSchema = z.object({
                     <Input
                       placeholder="Enter Email"
                       {...field}
-                      style={{ padding: '10px' }}
+                      style={{ padding: "10px" }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -219,7 +219,7 @@ const formSchema = z.object({
               )}
             />
 
-<FormField
+            <FormField
               control={form.control}
               name="rphone"
               render={({ field }) => (
@@ -229,7 +229,7 @@ const formSchema = z.object({
                     <Input
                       placeholder="Enter Phone No."
                       {...field}
-                      style={{ padding: '10px' }}
+                      style={{ padding: "10px" }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -246,21 +246,21 @@ const formSchema = z.object({
                     <Input
                       placeholder="Enter Phone No."
                       {...field}
-                      style={{ padding: '10px' }}
+                      style={{ padding: "10px" }}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-                        <FormField
+            <FormField
               control={form.control}
               name="fromPlace"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Pickup location</FormLabel>
                   <FormControl>
-                  <select
+                    <select
                       {...field}
                       style={{ padding: "10px", fontSize: "16px" }}
                     >
@@ -279,50 +279,50 @@ const formSchema = z.object({
               )}
             />
 
-<FormField
-          control={form.control}
-          name="fromaddress"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>From Address</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="From Address"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="fromaddress"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>From Address</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="From Address"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-<FormField
-          control={form.control}
-          name="toaddress"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>To Address</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="to Address"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="toaddress"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>To Address</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="to Address"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-<FormField
+            <FormField
               control={form.control}
               name="toPlace"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>frm</FormLabel>
                   <FormControl>
-                  <select
+                    <select
                       {...field}
                       style={{ padding: "10px", fontSize: "16px" }}
                     >
@@ -341,7 +341,7 @@ const formSchema = z.object({
               )}
             />
 
-<FormField
+            <FormField
               control={form.control}
               name="items"
               render={({ field }) => (
@@ -351,21 +351,20 @@ const formSchema = z.object({
                     <Input
                       placeholder="Num of Items"
                       {...field}
-                      style={{ padding: '10px' }}
+                      style={{ padding: "10px" }}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-  
-              <Button type="submit" style={{ padding: "10px" }}>
-                {"Submit"}
-              </Button>
-            </form>
-          </Form>
-        </div>
-      </MaxWidthWrapper>
-    );
-  }
-  
+
+            <Button type="submit" style={{ padding: "10px" }}>
+              {"Submit"}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </MaxWidthWrapper>
+  );
+}

@@ -12,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/logo.ico" />
       </Head>
       <main>
-        <Standard/>
+        <Standard />
       </main>
     </>
   );

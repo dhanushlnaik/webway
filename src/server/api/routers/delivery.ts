@@ -75,18 +75,19 @@ export const deliveryRouter = createTRPCRouter({
   }),
 
   addBus: publicProcedure
-  .input(z.object({
-    numberPlate : z.string(),
-    name : z.string()
-  })).mutation(async ({ctx, input}) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return ctx.db.bus.create({
-      data: {
-        numberPlate: input.numberPlate,
-        name: input.name
-      }
-    })
-  }),
-  
+    .input(
+      z.object({
+        numberPlate: z.string(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return ctx.db.bus.create({
+        data: {
+          numberPlate: input.numberPlate,
+          name: input.name,
+        },
+      });
+    }),
 });
-
