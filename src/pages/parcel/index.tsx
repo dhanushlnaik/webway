@@ -1,5 +1,7 @@
 import Head from "next/head";
 import LandingText from "~/components/layout/landing-text";
+import Standard from "~/components/userdelivery/Standard";
+import Express from "~/components/userdelivery/express";
 
 export default function Home() {
   return (
@@ -10,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/logo.ico" />
       </Head>
       <main>
-        <LandingText />
+        <Standard/>
       </main>
     </>
   );
