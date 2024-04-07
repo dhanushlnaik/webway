@@ -5,14 +5,21 @@ import { useStateStore } from "~/store";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 
+enum OrderStatus {
+  ACCEPTED = "ACCEPTED",
+  PENDING = "PENDING",
+  DECLINED = "DECLINED"
+}
+
 const BusDetails = () => {
   // Array of bus details objects
   const { setbusNo } = useStateStore();
-  const { deliveryid, receiverId} = useStateStore();
+  const { deliveryid, receiverId , Pickup, Destination} = useStateStore();
   const { data: session } = useSession();
   const user = session?.user;
   const addSQ = api.delivery.addsenderqr.useMutation();
-  const addRQ = api.delivery.addreceiverqr.useMutation()
+  const addRQ = api.delivery.addreceiverqr.useMutation();
+  const addBusOrder = api.bus.addbusorder.useMutation();
   const busDetailsArray = [
     {
       busName: "Navadurga",
@@ -118,6 +125,14 @@ const BusDetails = () => {
       deliveryID: deliveryid,
       receiverID: receiverId,
       scanNumber : 1
+    })
+    await addBusOrder.mutateAsync({
+      numberPlate: busNo,
+      trackingID: deliveryid,
+      Pickup: Pickup,
+      Destination : Destination,
+      rid : receiverId,
+      Status : OrderStatus.PENDING
     })
     setbusNo(busNo)
     console.log(`Order ${busNo} accepted.`);

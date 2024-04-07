@@ -1,47 +1,22 @@
 import React from "react";
+import { useStateStore } from "~/store";
+import { api } from "~/utils/api";
 
 export const TableView = () => {
-  const orders = [
-    {
-      orderNumber: 1,
-      numberOfItems: 5,
-      pickup: "New York",
-      destination: "Los Angeles",
-      receiverName: "John Doe",
-    },
-    {
-      orderNumber: 2,
-      numberOfItems: 3,
-      pickup: "Las Vegas",
-      destination: "Los Angeles",
-      receiverName: "John",
-    },
-    // Add more objects as needed
-  ];
+  const {busNo} = useStateStore();
+  const { data: orders} = api.bus.getpendingorder.useQuery({numberPlate: "NAV828"});
+  const { data: orderss } = api.bus.getacceptedorder.useQuery({numberPlate: "NAV828"});
 
-  const Uporders = [
-    {
-      orderNumber: 1,
-      numberOfItems: 5,
-      pickup: "New York",
-      destination: "Los Angeles",
-      receiverName: "John Doe",
-      status: "Pending",
-    },
-    {
-      orderNumber: 2,
-      numberOfItems: 3,
-      pickup: "Las Vegas",
-      destination: "Los Angeles",
-      receiverName: "John",
-      status: "Pending",
-    },
-    // Add more objects as needed
-  ];
 
-  const handleAccept = (orderNumber: number) => {
-    // Implement your logic for accepting the order here
-    console.log(`Order ${orderNumber} accepted.`);
+  const handleAccept = async (orderNumber: number) => {
+    try {
+
+      console.log(`Order ${orderNumber} accepted.`);
+      // Optionally, update the UI to reflect the accepted status
+    } catch (error) {
+      console.error('Error accepting order:', error);
+      // Handle errors appropriately, e.g., display an error message to the user
+    }
   };
 
   const handleDecline = (orderNumber: number) => {
@@ -67,13 +42,14 @@ export const TableView = () => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {orderss?.map((order, index) => (
                 <tr key={index}>
-                  <td className="border px-4 py-2">{order.orderNumber}</td>
-                  <td className="border px-4 py-2">{order.numberOfItems}</td>
-                  <td className="border px-4 py-2">{order.pickup}</td>
-                  <td className="border px-4 py-2">{order.destination}</td>
-                  <td className="border px-4 py-2">{order.receiverName}</td>
+                             <td className="border px-4 py-2">{order.trackingID}</td>
+                  <td className="border px-4 py-2">{order.orderNum}</td>
+                  <td className="border px-4 py-2">{order.Pickup}</td>
+                  <td className="border px-4 py-2">{order.Destination}</td>
+                  <td className="border px-4 py-2">{order.rid}</td>
+                  <td className="border px-4 py-2">{order.Status}</td>
                 </tr>
               ))}
             </tbody>
@@ -98,24 +74,24 @@ export const TableView = () => {
               </tr>
             </thead>
             <tbody>
-              {Uporders.map((order, index) => (
+              {orders?.map((order, index) => (
                 <tr key={index}>
-                  <td className="border px-4 py-2">{order.orderNumber}</td>
-                  <td className="border px-4 py-2">{order.numberOfItems}</td>
-                  <td className="border px-4 py-2">{order.pickup}</td>
-                  <td className="border px-4 py-2">{order.destination}</td>
-                  <td className="border px-4 py-2">{order.receiverName}</td>
-                  <td className="border px-4 py-2">{order.status}</td>
+                  <td className="border px-4 py-2">{order.trackingID}</td>
+                  <td className="border px-4 py-2">{order.orderNum}</td>
+                  <td className="border px-4 py-2">{order.Pickup}</td>
+                  <td className="border px-4 py-2">{order.Destination}</td>
+                  <td className="border px-4 py-2">{order.rid}</td>
+                  <td className="border px-4 py-2">{order.Status}</td>
                   <td className="border px-4 py-2">
                     <button
                       className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
-                      onClick={() => handleAccept(order.orderNumber)}
+                      onClick={() => handleAccept(order.orderNum)}
                     >
                       Accept
                     </button>
                     <button
                       className="ml-2 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
-                      onClick={() => handleDecline(order.orderNumber)}
+                      onClick={() => handleDecline(order.orderNum)}
                     >
                       Decline
                     </button>

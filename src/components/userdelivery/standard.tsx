@@ -47,7 +47,7 @@ const formSchema = z.object({
 export default function Standard() {
   const { data: session } = useSession();
   const user = session?.user;
-  const {setDeliveryId, setReceiverId } = useStateStore();
+  const {setDeliveryId , setReceiverId, setDestination, setPickup} = useStateStore();
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -149,6 +149,8 @@ export default function Standard() {
 
       setDeliveryId(trackingid);
       setReceiverId(receiverQuery.data?.id ?? "0");
+      setPickup(values.fromPlace);
+      setDestination(values.toPlace);
       toast({
         title: "Standard Delivery",
         description: `ID : ${trackingid}`,

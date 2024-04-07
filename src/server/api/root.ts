@@ -2,6 +2,7 @@ import { deliveryRouter } from "~/server/api/routers/delivery";
 import { userRouter } from "~/server/api/routers/user";
 import { qrRouter } from "~/server/api/routers/qr";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { busRouter } from "./routers/bus";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   delivery: deliveryRouter,
   user: userRouter,
   qr: qrRouter,
+  bus: busRouter
 });
 
 // export type definition of API
